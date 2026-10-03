@@ -12,6 +12,15 @@ documents a working reference implementation, built and debugged end-to-end
 in a lab environment, along with every real issue hit along the way and how
 each was diagnosed and fixed.
 
+> **Disclaimer:** this is an independent, as-is community guide, not an
+> official IBM deliverable. It isn't reviewed, endorsed, or supported by
+> IBM, and isn't a substitute for IBM Support or IBM's own product
+> documentation. It reflects one lab environment's working configuration —
+> verify against your own version and environment before relying on it in
+> production, and use IBM Support channels for anything requiring an
+> official fix or statement (see, for example, the defect references in
+> [06-troubleshooting.md](docs/06-troubleshooting.md)).
+
 ## Who this is for
 
 Anyone running IVIA WebSEAL reverse proxies that currently use CDSSO for
