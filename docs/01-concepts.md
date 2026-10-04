@@ -58,7 +58,7 @@ and validation rules, rather than a proprietary peer-to-peer scheme.
 |---|---|---|
 | Topology | Peer-to-peer | Hub-and-spoke |
 | Trust model | Each pair of reverse proxies configured directly | Each RP trusts one shared OP |
-| Kickoff | `GET /pkmscdsso?<target-url>` | `GET /pkmsoidc?iss=<op-id>&Target=<encoded-target-url>` |
+| Kickoff | `GET /pkmscdsso?<target-url>` | Link to the protected resource; WebSEAL challenges and returns the user to it after login (see [02-cdsso-vs-oidc.md](02-cdsso-vs-oidc.md)) |
 
 See [02-cdsso-vs-oidc.md](02-cdsso-vs-oidc.md) for the full comparison and
 migration considerations.

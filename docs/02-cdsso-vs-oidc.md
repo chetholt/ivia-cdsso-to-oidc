@@ -25,28 +25,32 @@ domain can't be read by another, which is the exact gap CDSSO was closing.
 | | CDSSO | OIDC |
 |---|---|---|
 | Topology | Peer-to-peer — each domain pushes an encrypted token to the next | Hub-and-spoke — one OP, consumed by one or more RPs |
-| Kickoff | `GET /pkmscdsso?<target-url>` | `GET /pkmsoidc?iss=<op-id>&Target=<encoded-target-url>` |
+| Kickoff | `GET /pkmscdsso?<target-url>` | Link directly to the protected resource — WebSEAL challenges the user and returns them to it after login |
 | Session sharing across domains | Built into CDSSO itself | Requires OIDC *plus* DSC/Redis — OIDC propagates identity across the domain boundary, DSC/Redis shares the resulting session within each domain |
 
 ## The kickoff URL swap
 
-The direct replacement for `/pkmscdsso?<target-url>` is:
+There is no one-to-one equivalent of `/pkmscdsso?<target-url>` in the
+WebSEAL OIDC RP. `/pkmsoidc` is the OIDC redirect_uri, not a "log in and go
+to this URL" endpoint — it doesn't accept a destination parameter. The
+replacement is simply to link directly to the protected resource:
 
 ```
-GET /pkmsoidc?iss=<op-id>&Target=<encoded-target-url>
+GET /some-protected-page
 ```
 
-`iss` selects which OP to use — it can be omitted if the RP has a
-`default-op` configured and only ever talks to one OP.
+An unauthenticated user is challenged by WebSEAL (the login page includes
+the OIDC Login button), and after authenticating is returned to the page
+they originally requested. See [04-rp-setup.md](04-rp-setup.md) for the
+details and why `/pkmsoidc?...&Target=...` doesn't work.
 
 **Behavioral difference to plan for:** CDSSO's `/pkmscdsso` was a
 transparent redirect the browser was pushed through automatically. The
-WebSEAL OIDC RP presents `/pkmsoidc` as a login *mechanism* — a button on
-the login page, or a link you build — rather than something invoked
-silently. If your CDSSO deployment relied on invisible redirection between
-peers, plan to explicitly link to `/pkmsoidc` (see
-[04-rp-setup.md](04-rp-setup.md) for the exact link format) rather than
-assuming it fires automatically.
+WebSEAL OIDC RP presents OIDC as a login *mechanism* — a button on the
+login page — rather than something invoked silently. If your CDSSO
+deployment relied on invisible redirection between peers, users will now
+see the login page and need to choose OIDC Login (see
+[04-rp-setup.md](04-rp-setup.md) for ways to make that clearer).
 
 ## If you need closer CDSSO-like push behavior
 
