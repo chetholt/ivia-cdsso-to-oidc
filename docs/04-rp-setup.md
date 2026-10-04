@@ -113,6 +113,22 @@ there's nothing for it to send the user back to. Linking directly to the
 protected resource (above) is therefore not just the simpler option — it's
 the only pattern that reliably lands the user where they intended to go.
 
+IBM's own product documentation backs this up independently. The IVIA
+11.0.3 documentation's "Landing page" topic (last updated 2026-06-19)
+lists every parameter `/pkmsoidc` actually processes:
+
+| Method | Arguments | Processing |
+|---|---|---|
+| `GET` | none | Returns the self-posting fragment form (`oidc_fragment.html`), used for the implicit flow |
+| `GET` | `iss` | Entry point into the auth flow — starts a new authentication request for the specified (or default) issuer |
+| `GET` | `code` | The authorization code flow's successful authentication response |
+| `POST` | none | The implicit flow's successful authentication response |
+
+`Target` isn't in that list. It was never a recognized parameter — the
+reason it doesn't drive a redirect isn't a bug or an oversight, it's that
+the endpoint's complete, documented parameter surface simply doesn't
+include one.
+
 ### What `/pkmsoidc` is actually for
 
 It's worth understanding why the endpoint behaves this way, rather than
@@ -142,6 +158,28 @@ Practical takeaway: use `/pkmsoidc` only as the registered callback and as
 what the login page's own button calls — not as a link for other
 applications to construct. For that, link to the protected resource
 directly, as shown above.
+
+### Nudging users toward OIDC login
+
+The default login page shows both the forms-login fields and the OIDC
+Login button side by side, which leaves it up to the user to know which
+one to click when they've arrived for cross-domain sign-on. If that's a
+concern, a couple of lightweight `login.html` tweaks help without
+requiring anything as involved as step-up authentication:
+
+- Add a line of text above the OIDC Login button — something like
+  "Signing in from another application? Use OIDC Login below" — so users
+  landing there via a link from another app know which option applies to
+  them.
+- If an RP instance only ever expects OIDC sign-on (no local
+  username/password users at all), remove the forms-login block from that
+  instance's `login.html` entirely, leaving only the OIDC Login button.
+  This is a per-instance template edit, so it only affects RPs where it
+  makes sense — instances that still need forms login keep both options.
+
+Either is optional, and neither is required for the flow itself to work —
+they're just UX polish for RPs where the dual-option page would otherwise
+be confusing.
 
 Next: [05-topology.md](05-topology.md) — why OP and RP need to run on
 separate reverse proxy instances.
